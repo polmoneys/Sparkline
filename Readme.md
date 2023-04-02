@@ -1,6 +1,6 @@
 ## TLDR
 
-Sparklines with `svg` & `react`. [Demo](https://github.com/polmoneys/charts)
+Sparklines with `svg` & `react`. [Demo](https://polmoneys.github.io/Sparkline/)
 
 ### Sparkline
 
