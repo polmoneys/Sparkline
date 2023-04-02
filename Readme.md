@@ -4,7 +4,8 @@ Sparklines with `svg` & `react`. [Demo](https://polmoneys.github.io/Sparkline/)
 
 ### Sparkline
 
-Tiny/Dense **sparklines** are the goal of this exploration so expect features oriented towards simplify datum interpretation. 
+Tiny/Dense **sparklines** are the goal of this exploration. Like in:
+
 
 ```ts
 
@@ -42,7 +43,7 @@ export interface SparklineProps {
   circleColors?: string[]
   circleRadius?: number
   crosshairColor?: string
-  activeIndex: number | null
+  activeIndex?: number | null
   onSelectPoint?: (point: DataPoint) => void
   TooltipComponent?: React.FC<{
     x: number
@@ -69,7 +70,8 @@ You **must** set some css custom properties to style it all, these are decent de
 
 :root {
   /* caption */
-  --sparkline-ui-color: hsl(344, 94%, 60%);
+  --sparkline-ui-fill: hsla(250, 11%, 37%, 1);
+  --sparkline-ui-color: #f5f5f7;
   --sparkline-transparent: rgba(0, 0, 0, 0.001);
   --sparkline-border: 1px solid hsl(0, 4%, 94%);
   /* dim */
