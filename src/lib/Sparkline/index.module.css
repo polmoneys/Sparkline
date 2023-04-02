@@ -1,0 +1,126 @@
+.stick {
+  width: 100%;
+}
+
+.root {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.svg {
+  overflow: visible;
+}
+
+.caption {
+  background-color: var(--sparkline-ui-fill);
+  color: var(--sparkline-ui-color);
+  border: var(--sparkline-border);
+  padding: var(--sparkline-gap);
+}
+
+.caption > p {
+  margin-bottom: var(--sparkline-gap);
+}
+
+.tooltip {
+  position: relative;
+}
+
+.rect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--sparkline-z-rect);
+  height: 100%;
+}
+
+.axis {
+  display: grid;
+}
+
+.root circle,
+.button,
+.iconButton {
+  cursor: pointer;
+}
+
+.button {
+  appearance: none;
+  aspect-ratio: none;
+  display: inline-flex;
+  width: fit-content;
+  gap: var(--sparkline-gap);
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid var(--sparkline-transparent);
+  padding: calc(var(--sparkline-gap) / 10) var(--sparkline-gap);
+  border-radius: 4px;
+  color: var(--sparkline-ui-fill);
+}
+
+.button:focus,
+.iconButton:focus {
+  outline: none;
+  opacity: var(--sparkline-disabled);
+}
+
+.range {
+  margin-top: calc(var(--sparkline-gap) * 2);
+  width: 100%;
+}
+
+.range:focus {
+  outline: none;
+  filter: hue-rotate(120deg);
+}
+
+.iconButton {
+  appearance: none;
+  background-color: var(--sparkline-transparent);
+  border: 1px solid var(--sparkline-transparent);
+}
+
+.actions {
+  position: absolute;
+  z-index: var(--sparkline-z-actions);
+  width: 100%;
+  inset-block-start: var(--sparkline-gap);
+  display: flex;
+  gap: calc(var(--sparkline-gap) * 2);
+  align-items: center;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 15%,
+    #000 85%,
+    transparent 100%
+  );
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+.row:has(.row) {
+  gap: var(--sparkline-gap);
+}
+.row button:first-of-type {
+  margin-left: var(--sparkline-gap);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.row button:last-of-type {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.mlAuto {
+  margin-left: auto;
+}
+
+.gap {
+  gap: var(--sparkline-gap);
+}

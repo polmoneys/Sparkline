@@ -1,0 +1,6 @@
+*.css
+*.svg
+jest-setup.ts
+playwright.config.ts 
+tests/*.ts
+tests-examples/*.ts
