@@ -12,8 +12,10 @@ const Focus = ({ series, className }: FocusProps): JSX.Element => {
     index: number,
     area = false,
     areaHideOpacity = 0,
-    areaShowOpacity = 'var(--sparkline-area-dim)',
-    pathHideOpacity = 'var(--sparkline-spark-dim)',
+    // TODO: fix 'var(--sparkline-area-dim)',
+    areaShowOpacity = 0.3,
+    // TODO: fix 'var(--sparkline-spark-dim)',
+    pathHideOpacity = 0.1,
     pathShowOpacity = 1,
   ): void => {
     const className = !area ? `serie-${index}` : `serie-${index}-area`
@@ -21,6 +23,8 @@ const Focus = ({ series, className }: FocusProps): JSX.Element => {
     for (let i = 0; i < elements.length; i++) {
       const element = elements[i]
       const currentOpacity = parseFloat(element.getAttribute('opacity') ?? '1')
+      console.log({ currentOpacity })
+
       const isVisible = !area
         ? currentOpacity === Number(pathShowOpacity)
         : currentOpacity === Number(areaShowOpacity)
