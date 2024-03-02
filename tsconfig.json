@@ -31,7 +31,7 @@
   "include": [
     "./src",
     "vite.config.ts",
-    "prettier.config.js",
+    "prettier.config.cjs",
     ".eslintrc.cjs"
   ],
   "exclude": [
