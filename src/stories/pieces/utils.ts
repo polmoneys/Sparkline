@@ -1,12 +1,6 @@
 import { type Serie } from '@/lib/Sparkline/types'
 import { DARK_COLORS } from '@/lib/Sparkline/utils'
-export const VariantOptions = [
-  'tiny',
-  'export',
-  'select',
-  'focus',
-  'window',
-] as const
+export const VariantOptions = ['canon', 'window'] as const
 export type Variants = (typeof VariantOptions)[number]
 
 const generateData = (startValue: number, length: number, meta = 'AAPL') => {
@@ -96,5 +90,3 @@ export const dataSerie = [
     color: DARK_COLORS[0],
   },
 ]
-
-export const HAPPY_COLORS = ['hsl(344, 94%, 60%)', '#2260ff', 'yellow']

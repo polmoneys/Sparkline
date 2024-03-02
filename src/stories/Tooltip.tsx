@@ -24,7 +24,10 @@ const Tooltip = (props: TooltipProps): JSX.Element | null => {
       }}
     >
       <p>
-        {serie} <b>{label}</b> <span>{formatNumber(value)}</span>
+        {serie} <br />
+        <b>{label}</b>
+        <br />
+        <span>{formatNumber(value)}</span>
       </p>
     </div>
   )
