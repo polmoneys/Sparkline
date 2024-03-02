@@ -4,65 +4,100 @@ Sparklines with `svg` & `react`. [Demo](https://polmoneys.github.io/Sparkline/)
 
 ### Sparkline
 
-Tiny/Dense **sparklines** are the goal of this exploration. Like in:
-
+Tiny/Dense **sparklines** where the initial goal of this exploration. It could do **exports**, **captions**, **tooltips**, **crosshairs**, **dimming** for extra focus...On v2 `beta` added built in **url** sync with `react-router` and **excel** export. 
 
 ```ts
 
-// Adds sliding window
-<Window series={dataAllSeries} windowSize={30}>
-    {sliced => (
+// Sparkline with customTooltip and custom line/circle appearance...
+<Sparkline
+  series={datum}
+  TooltipComponent={CustomTooltip}
+  height={height}
+  width={width}
+  circleRadius={circleRadius}
+  lineColors={palette}
+  circleColors={palette}
+/>
+
+// Adds crosshair, dimming, export, syncs Url with point...
+const { setSearchParams, pointInUrlDetails } = useSparklineUrl()
+
+<Mouse series={datum}>
+  {active => (
+    <Sparkline
+      series={datum}
+      activeIndex={active}
+      height={height}
+      width={width}
+      canDim
+      canExport
+      exportSchema={schema}
+      onSelectPointToUrl={point => {
+        setSearchParams(point)
+      }}
+    />
+  )}
+</Mouse>
+
+// display output
+{pointInUrlDetails() !== undefined && (
+  <Card
+    value={pointInUrlDetails().value }
+    label={pointInUrlDetails().date }
+    onClick={() => {
+      setSearchParams()
+    }}
+  />
+)}
+
+// Adds sliding window, drag a rectangle to select points...
+const [selectedPoints, setPoints] = useState<DataPoints>([])
+
+<Window series={datum} windowSize={30}>
+{sliced => (
+  <Fragment>
+    <Mouse series={datum} windowSize={30}>
+      {active => (
         <Sparkline
-        activeIndex={null}
-        series={dataAllSeries}
-        points={sliced}
-        height={200}
-        circleRadius={2}
+          series={datum}
+          points={sliced}
+          activeIndex={active}
+          width={width}
+          height={height}
+          onSelectPoints={selection => {
+            setPoints(selection)
+          }}
+          canSelect
         />
-    )}
+      )}
+    </Mouse>
+      <p>
+        <b>Range:</b>
+        {formatDateTime(new Date(sliced[0][0].date))}-
+        {formatDateTime(
+          new Date(sliced[0][sliced[0].length - 1].date as Date),
+        )}
+      </p>
+  </Fragment>
+)}
 </Window>
 
+// display output
+{selectedPoints?.map((p, i) => (
+  <Card
+    key={p.label}
+    value={formatNumber(p.value)}
+    label={p.label}
+    onClick={() => {
+      setPoints([])
+    }}
+  />
+))}
 
 ```
 
-It can do **exports**, **captions** and **dimming** for extra focus. Some props:
 
-```ts
-
-// Add props to 
-<Sparkline/>
-
-export interface SparklineProps {
-  series: Series
-  captionClassName?: string
-  caption?: string
-  points?: DataPoint[][]
-  width?: number
-  height?: number
-  lineColors?: string[]
-  circleColors?: string[]
-  circleRadius?: number
-  crosshairColor?: string
-  activeIndex?: number | null
-  onSelectPoint?: (point: DataPoint) => void
-  TooltipComponent?: React.FC<{
-    x: number
-    y: number
-    point: any
-    color: string
-    serie: string
-  }>
-  canSelect?: boolean
-  onSelectPoints?: (point: DataPoints) => void
-  canDim?: boolean
-  canExport?: boolean
-  exportFormat?: ExportFormat
-  exportFilename?: string
-  onExport?: () => void
-  onExportError?: (error: any) => void
-}
-
-```
+### FAQ 
 
 You **must** set some css custom properties to style it all, these are decent defaults:
 
@@ -74,9 +109,6 @@ You **must** set some css custom properties to style it all, these are decent de
   --sparkline-ui-color: #f5f5f7;
   --sparkline-transparent: rgba(0, 0, 0, 0.001);
   --sparkline-border: 1px solid hsl(0, 4%, 94%);
-  /* dim */
-  --sparkline-spark-dim: 0.1;
-  --sparkline-area-dim: 0.3;
   /* selection */
   --sparkline-rect-color: rgba(0, 0, 255, 0.2);
   --sparkline-rect-stroke: blue;
@@ -88,7 +120,6 @@ You **must** set some css custom properties to style it all, these are decent de
 }
 
 ```
-
 
 ### Related
 
