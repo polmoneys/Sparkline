@@ -1,13 +1,4 @@
-import {
-  useState,
-  type Dispatch,
-  type SetStateAction,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  Fragment,
-} from 'react'
+import { useState, type Dispatch, type SetStateAction, useMemo } from 'react'
 import { useControls, folder, button } from 'leva'
 import {
   dataAllSeries,
