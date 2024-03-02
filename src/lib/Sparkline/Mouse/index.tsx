@@ -11,11 +11,15 @@ import styles from '../index.module.css'
 interface MouseProps {
   series: Series
   children: (active: number | null) => ReactNode
+  windowSize?: number
 }
 
 const Mouse = (props: MouseProps): JSX.Element => {
-  const { series, children } = props
-  const points = series.map(item => item.points)
+  const { series, children, windowSize } = props
+  const points =
+    windowSize !== undefined
+      ? series.map(item => item.points.slice(0, windowSize))
+      : series.map(item => item.points)
   const [active, setActive] = useState<number | null>(null)
   const divRef = useRef<HTMLDivElement>(null)
 

@@ -1,26 +1,18 @@
 import { type RectCoordinates } from './Selection'
 
 export const SPARKLINE_PADDING_START = 30
-
-export const DARKISH_COLORS = [
-  'hsl(0, 1%, 38%)',
-  'hsl(0, 1%, 27%)',
-  'hsl(0, 1%, 20%)',
-]
+export const DEFAULT_SPARKLINE_WIDTH = 200
+export const DEFAULT_SPARKLINE_HEIGHT = 100
 
 export const DARK_COLORS = [
-  'hsl(0, 4%, 74%)',
-  'hsl(0, 4%, 60%)',
-  'hsl(0, 2%, 53%)',
-]
-
-export const DARKER_COLORS = [
-  'hsl(0, 4%, 74%)',
   'hsl(0, 4%, 80%)',
-  'hsl(0, 4%, 94%)',
+  'hsl(0, 4%, 70%)',
+  'hsl(0, 2%, 63%)',
 ]
 
-export const FUN_COLORS = ['hsl(344, 94%, 60%)', 'yellow', '#007bff']
+export const HAPPY_COLORS = ['#ec8661', '#ecd161', '#e3a37a']
+
+export const FUN_COLORS = HAPPY_COLORS
 
 export const dim = (
   index: number,
@@ -193,3 +185,16 @@ export function pluralize(word: string, count: number): string {
 
 export const classes = (...params: unknown[]): string =>
   params.filter(Boolean).join(' ')
+
+export const slugify = (str: string): string =>
+  str
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+
+export const unslugify = (slug: string): string => {
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}

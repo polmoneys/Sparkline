@@ -1,6 +1,12 @@
-import styles from '../index.module.css'
-
-export type ExportFormat = 'svg' | 'png' | 'jpeg'
+import { Fragment, useCallback } from 'react'
+import writeXlsxFile from 'write-excel-file'
+import {
+  type ExportFormat,
+  type ExportExcelSchema,
+  type DataPoints,
+  type Series,
+} from '../types'
+import Icon from '../Icons'
 
 interface ExportProps {
   filename?: string
@@ -8,6 +14,9 @@ interface ExportProps {
   onExport?: (format: ExportFormat) => void
   onError?: (error: any) => void
   divRef: any
+  schema?: ExportExcelSchema
+  items: DataPoints[]
+  seriesProp: Series
 }
 
 const Export = (props: ExportProps): JSX.Element => {
@@ -17,9 +26,12 @@ const Export = (props: ExportProps): JSX.Element => {
     onExport,
     onError,
     divRef,
+    schema,
+    items,
+    seriesProp,
   } = props
 
-  const exportChart = async () => {
+  const exportChart = async (): Promise<void> => {
     const svgElement = divRef.current?.querySelector('svg')
     if (svgElement == null) return
 
@@ -68,28 +80,61 @@ const Export = (props: ExportProps): JSX.Element => {
     link.click()
   }
 
+  const canExportExcel = schema !== undefined
+
+  const exportFile = useCallback(async (): Promise<void> => {
+    if (!canExportExcel) return
+    const datum = items
+      .map((serie, datasetIndex) =>
+        serie.map(item => ({
+          ...item,
+          serie: seriesProp[datasetIndex].name,
+        })),
+      )
+      .flat()
+    try {
+      await writeXlsxFile(datum, {
+        schema,
+        fileName: `${filename}-excel.xlsx`,
+        stickyColumnsCount: 2,
+        sheet: 'KIT',
+      })
+    } catch (error) {
+      onError?.(error)
+    }
+  }, [items, schema])
+
   return (
-    <button
-      className={`${styles.iconButton} ${styles.mlAuto}`}
-      onClick={() => {
-        void (async () => {
-          try {
-            await exportChart()
-          } catch (error) {
-            onError?.(error)
-          }
-        })()
-      }}
-    >
-      <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-        <rect width="24" height="24" opacity="0" />
-        <path
-          stroke="var(--sparkline-ui-fill)"
-          fill="var(--sparkline-ui-fill)"
-          d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm3.69 11.86l-3 2.86a.49.49 0 0 1-.15.1.54.54 0 0 1-.16.1.94.94 0 0 1-.76 0 1 1 0 0 1-.33-.21l-3-3a1 1 0 0 1 1.42-1.42l1.29 1.3V8a1 1 0 0 1 2 0v5.66l1.31-1.25a1 1 0 0 1 1.38 1.45z"
-        />
-      </svg>
-    </button>
+    <Fragment>
+      <button
+        onClick={() => {
+          void (async () => {
+            try {
+              await exportChart()
+            } catch (error) {
+              onError?.(error)
+            }
+          })()
+        }}
+      >
+        <Icon name="chart" />
+      </button>
+      {canExportExcel && (
+        <button
+          onClick={() => {
+            void (async () => {
+              try {
+                await exportFile()
+              } catch (error) {
+                onError?.(error)
+              }
+            })()
+          }}
+        >
+          <Icon name="file" />
+        </button>
+      )}
+    </Fragment>
   )
 }
 

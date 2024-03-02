@@ -1,5 +1,5 @@
 {
-  "name": "waffle-sparkline",
+  "name": "sparkline",
   "private": false,
   "version": "1.0.1",
   "scripts": {
@@ -27,7 +27,8 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.8.0",
     "react-stick": "^5.0.3",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "write-excel-file": "^1.4.29"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

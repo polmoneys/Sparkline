@@ -22,7 +22,9 @@ function Crosshair(props: CrosshairProps): JSX.Element {
 
   if (activeIndex === null) return <Fragment />
 
-  const x = normalizedDataSeries[0].circles[activeIndex].x
+  const item = normalizedDataSeries[0].circles[activeIndex]
+  if (item === undefined || item.x === undefined) return <Fragment />
+  const x = item.x
   return (
     <Fragment>
       <line

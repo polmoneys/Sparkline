@@ -1,16 +1,20 @@
-import { useRef, useState, useMemo, useCallback } from 'react'
+import { useRef, useState, useMemo, useCallback, Fragment } from 'react'
 import Stick from 'react-stick'
 import {
-  type DataPoints,
-  type Series,
   type DataPoint,
   type Captions,
+  type SparklineData,
+  type SparklineAddons,
+  type SparklineSelectionCallbacks,
+  type SparklineAppearance,
+  type SparklineExportOptions,
 } from './types'
 import useSeries from './useSeries'
 import useResizeObserver from './useResizeObserver'
 import {
-  DARKER_COLORS,
   DARK_COLORS,
+  DEFAULT_SPARKLINE_HEIGHT,
+  DEFAULT_SPARKLINE_WIDTH,
   SPARKLINE_PADDING_START,
   formatDateTime,
   formatNumber,
@@ -22,37 +26,19 @@ import Spark from './Spark'
 import Crosshair from './Crosshair'
 import Caption from './Caption'
 import Focus from './Focus'
-import Export, { type ExportFormat } from './Export'
+import Export from './Export'
 import styles from './index.module.css'
+import Icon from './Icons'
 
-export interface SparklineProps {
-  series: Series
-  caption?: string
-  captionClassName?: string
-  points?: DataPoint[][]
-  width?: number
-  height?: number
-  lineColors?: string[]
-  circleColors?: string[]
-  circleRadius?: number
-  crosshairColor?: string
-  activeIndex?: number | null
-  onSelectPoint?: (point: DataPoint) => void
-  TooltipComponent?: React.FC<{
-    x: number
-    y: number
-    point: any
-    color: string
-    serie: string
-  }>
-  canSelect?: boolean
-  onSelectPoints?: (point: DataPoints) => void
+export interface SparklineProps
+  extends SparklineData,
+    SparklineAddons,
+    SparklineAppearance,
+    SparklineSelectionCallbacks,
+    SparklineExportOptions {
   canDim?: boolean
+  canSelect?: boolean
   canExport?: boolean
-  exportFormat?: ExportFormat
-  exportFilename?: string
-  onExport?: () => void
-  onExportError?: (error: any) => void
 }
 
 const Sparkline = (props: SparklineProps): JSX.Element => {
@@ -62,7 +48,7 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
     height: heightProp,
     circleRadius = 2,
     lineColors = DARK_COLORS,
-    circleColors = DARKER_COLORS,
+    circleColors = DARK_COLORS,
     activeIndex = null,
     TooltipComponent,
     points,
@@ -74,8 +60,10 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
     onExport,
     exportFilename,
     exportFormat,
+    exportSchema,
     onSelectPoints,
-    crosshairColor = 'rgba(0, 0, 0, 0.2)',
+    onSelectPointToUrl,
+    crosshairColor = 'var(--sparkline-crosshair-color)',
     captionClassName,
     caption: captionProp,
   } = props
@@ -85,15 +73,17 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
   const parentSize = useResizeObserver(divRef)
 
   const width = useMemo(
-    () => widthProp ?? parentSize.width ?? 200,
-    [parentSize, widthProp],
+    () => widthProp ?? parentSize.width ?? DEFAULT_SPARKLINE_WIDTH,
+    [parentSize, widthProp, DEFAULT_SPARKLINE_WIDTH],
   )
   const height = useMemo(
-    () => heightProp ?? parentSize.height ?? 100,
-    [parentSize, heightProp],
+    () => heightProp ?? parentSize.height ?? DEFAULT_SPARKLINE_HEIGHT,
+    [parentSize, heightProp, DEFAULT_SPARKLINE_HEIGHT],
   )
-  const input =
-    points !== undefined ? points : seriesProp.map(item => item.points)
+  const input = useMemo(
+    () => (points !== undefined ? points : seriesProp.map(item => item.points)),
+    [points, seriesProp],
+  )
 
   const { series, items, minY, maxY, minX, maxX } = useSeries({
     items: input,
@@ -103,9 +93,11 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
   })
 
   const [activeCaption, setShowCaption] = useState<Captions | null>(null)
+
   const hideCaption = (): void => {
     setShowCaption(null)
   }
+
   const toggleCaption = useCallback((): void => {
     if (activeCaption === 'series') {
       hideCaption()
@@ -113,6 +105,7 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
     }
     setShowCaption('series')
   }, [activeCaption])
+
   const toggleFocus = useCallback((): void => {
     if (activeCaption === 'focus') {
       hideCaption()
@@ -123,15 +116,15 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
 
   const caption = useMemo(
     () =>
-      `Looking at ${series} ${pluralize(
-        'serie',
-        series,
-      )} with min of ${formatNumber(minY)} and max ${formatNumber(
+      `Min ${formatNumber(minY)}, Max ${formatNumber(
         maxY,
-      )}. Period ${formatDateTime(minX as any)}-${formatDateTime(maxX as any)}
+      )}. Period: ${formatDateTime(minX as any)}-${formatDateTime(maxX as any)}
       `,
     [series, minY, maxY, minX, maxX],
   )
+
+  const canTooltip = TooltipComponent !== undefined && activeIndex !== null
+  const [activeActionBar, setActiveActionBar] = useState(true)
 
   return (
     <Stick
@@ -170,6 +163,7 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
               lineColors={lineColors}
               circleRadius={circleRadius}
               onSelectPoint={onSelectPoint}
+              onSelectPointToUrl={onSelectPointToUrl}
               seriesProp={seriesProp}
               normalizedData={normalizedData}
               datasetIndex={datasetIndex}
@@ -184,9 +178,10 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
             circleColors={circleColors}
           />
         </svg>
-        {TooltipComponent !== undefined &&
-          activeIndex !== null &&
+        {canTooltip &&
           items.map(({ circles }, datasetIndex: number) => {
+            if (circles[activeIndex] === undefined)
+              return <Fragment key={datasetIndex} />
             const { x, y } = circles[activeIndex]
             const color = circleColors[datasetIndex % circleColors.length]
             const point = input[datasetIndex][activeIndex]
@@ -225,17 +220,33 @@ const Sparkline = (props: SparklineProps): JSX.Element => {
           />
         )}
         <div className={styles.actions}>
-          <Caption.Trigger onClick={toggleCaption} />
-          {canDim && <Focus.Trigger onClick={toggleFocus} />}
-          {canExport && (
-            <Export
-              onError={onExportError}
-              onExport={onExport}
-              filename={exportFilename}
-              format={exportFormat}
-              divRef={divRef}
-            />
+          {activeActionBar && (
+            <Fragment>
+              <Caption.Trigger onClick={toggleCaption} />
+              {canDim && <Focus.Trigger onClick={toggleFocus} />}
+              {canExport && (
+                <Export
+                  onError={onExportError}
+                  onExport={onExport}
+                  filename={exportFilename}
+                  format={exportFormat}
+                  divRef={divRef}
+                  items={input}
+                  seriesProp={seriesProp}
+                  {...(exportSchema !== undefined && { schema: exportSchema })}
+                />
+              )}
+            </Fragment>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              setActiveActionBar(prev => !prev)
+            }}
+            className={styles.mlAuto}
+          >
+            <Icon name={activeActionBar ? 'hidden' : 'hide'} />
+          </button>
         </div>
       </div>
     </Stick>

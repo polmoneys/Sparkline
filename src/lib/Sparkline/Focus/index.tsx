@@ -1,6 +1,7 @@
 import { type Series } from '../types'
 import { classes } from '../utils'
 import styles from '../index.module.css'
+import Icon from '../Icons'
 
 export interface FocusProps {
   series: Series
@@ -8,30 +9,23 @@ export interface FocusProps {
 }
 
 const Focus = ({ series, className }: FocusProps): JSX.Element => {
-  const toggleVisibility = (
-    index: number,
-    area = false,
-    areaHideOpacity = 0,
-    // TODO: fix 'var(--sparkline-area-dim)',
-    areaShowOpacity = 0.3,
-    // TODO: fix 'var(--sparkline-spark-dim)',
-    pathHideOpacity = 0.1,
-    pathShowOpacity = 1,
-  ): void => {
-    const className = !area ? `serie-${index}` : `serie-${index}-area`
-    const elements = document.getElementsByClassName(className)
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i]
+  const toggleLine = (index: number): void => {
+    const className = `path.serie-${index}`
+    const element = document.querySelector(className)
+    if (element != null) {
       const currentOpacity = parseFloat(element.getAttribute('opacity') ?? '1')
-      console.log({ currentOpacity })
-
-      const isVisible = !area
-        ? currentOpacity === Number(pathShowOpacity)
-        : currentOpacity === Number(areaShowOpacity)
-      const hideOpacity = !area ? pathHideOpacity : areaHideOpacity
-      const visibleOpacity = !area ? pathShowOpacity : areaShowOpacity
-
-      const newOpacity = isVisible ? hideOpacity : visibleOpacity
+      const isVisible = currentOpacity !== 0.1
+      const newOpacity = isVisible ? 0.1 : 1
+      element.setAttribute('opacity', newOpacity.toString())
+    }
+  }
+  const toggleArea = (index: number): void => {
+    const className = `path.serie-${index}-area`
+    const element = document.querySelector(className)
+    if (element != null) {
+      const currentOpacity = parseFloat(element.getAttribute('opacity') ?? '1')
+      const isVisible = currentOpacity !== 0.1
+      const newOpacity = isVisible ? 0.1 : 0.6
       element.setAttribute('opacity', newOpacity.toString())
     }
   }
@@ -47,7 +41,7 @@ const Focus = ({ series, className }: FocusProps): JSX.Element => {
             </svg>
             <button
               onClick={() => {
-                toggleVisibility(index)
+                toggleLine(index)
               }}
               className={styles.button}
             >
@@ -55,7 +49,7 @@ const Focus = ({ series, className }: FocusProps): JSX.Element => {
             </button>
             <button
               onClick={() => {
-                toggleVisibility(index, true)
+                toggleArea(index)
               }}
               className={styles.button}
             >
@@ -69,15 +63,8 @@ const Focus = ({ series, className }: FocusProps): JSX.Element => {
 }
 
 const Trigger = ({ onClick }: { onClick: () => void }): JSX.Element => (
-  <button type="button" onClick={onClick} className={styles.iconButton}>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <rect width="24" height="24" />
-      <path
-        stroke="var(--sparkline-ui-fill)"
-        fill="var(--sparkline-ui-fill)"
-        d="M13.9 22a1 1 0 0 1-.6-.2l-4-3.05a1 1 0 0 1-.39-.8v-3.27l-4.8-9.22A1 1 0 0 1 5 4h14a1 1 0 0 1 .86.49 1 1 0 0 1 0 1l-5 9.21V21a1 1 0 0 1-.55.9 1 1 0 0 1-.41.1z"
-      />
-    </svg>
+  <button type="button" onClick={onClick}>
+    <Icon name="filter" />
   </button>
 )
 
