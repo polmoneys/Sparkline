@@ -76,12 +76,15 @@ function Foci(props: Props): JSX.Element {
     series: folder(
       {
         single: button(get => {
+          setSearchParams()
           setDemo(dataSerie)
         }),
         compare: button(get => {
+          setSearchParams()
           setDemo(dataSeries)
         }),
         multiple: button(get => {
+          setSearchParams()
           setDemo(dataAllSeries)
         }),
       },
@@ -101,6 +104,7 @@ function Foci(props: Props): JSX.Element {
     demos: folder(
       {
         window: button(get => {
+          setSearchParams()
           setter('window')
         }),
       },

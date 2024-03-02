@@ -20,7 +20,6 @@ export default function App(): JSX.Element {
       const ranges = document.querySelectorAll(
         "div[class^='leva-']:has( > div[class*='hasRange'])",
       )
-      console.log({ ranges })
 
       for (const range of ranges) {
         range.classList.add('white')
