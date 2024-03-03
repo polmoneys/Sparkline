@@ -4,7 +4,7 @@ Sparklines with `svg` & `react`. [Demo](https://polmoneys.github.io/Sparkline/)
 
 ### Sparkline
 
-Tiny/Dense **sparklines** where the initial goal of this exploration. It could do **exports**, **captions**, **tooltips**, **crosshairs**, **dimming** for extra focus...On v2 `beta` added built in **url** sync with `react-router` and **excel** export. 
+Tiny/Dense **sparklines** where the initial goal of this exploration. It could do **exports**, **captions**, **tooltips**, **crosshairs**, **dimming** for extra focus...On `v2-beta` added built in **url** sync with `react-router` and **excel** export. 
 
 ```ts
 
@@ -19,7 +19,7 @@ Tiny/Dense **sparklines** where the initial goal of this exploration. It could d
   circleColors={palette}
 />
 
-// Adds crosshair, dimming, export, syncs Url with point...
+// Add crosshair, dimming, export, syncs Url with point...
 const { setSearchParams, pointInUrlDetails } = useSparklineUrl()
 
 <Mouse series={datum}>
@@ -50,7 +50,7 @@ const { setSearchParams, pointInUrlDetails } = useSparklineUrl()
   />
 )}
 
-// Adds sliding window, drag a rectangle to select points...
+// Add sliding window, dragging a rectangle to select points...
 const [selectedPoints, setPoints] = useState<DataPoints>([])
 
 <Window series={datum} windowSize={30}>
@@ -104,26 +104,24 @@ You **must** set some css custom properties to style it all, these are decent de
 ```css
 
 :root {
-  /* caption */
   --sparkline-ui-fill: hsla(250, 11%, 37%, 1);
   --sparkline-ui-color: #f5f5f7;
   --sparkline-transparent: rgba(0, 0, 0, 0.001);
   --sparkline-border: 1px solid hsl(0, 4%, 94%);
+  --sparkline-z-actions: 99;
+  --sparkline-gap: 0.5em;
   /* selection */
   --sparkline-rect-color: rgba(0, 0, 255, 0.2);
   --sparkline-rect-stroke: blue;
   --sparkline-z-rect: 9;
-  /* actions */
-  --sparkline-z-actions: 99;
-  /* common */
-  --sparkline-gap: 0.5em;
+
 }
 
 ```
 
-### Related
+### Prior work 
 
-Previous work [demo](https://github.com/polmoneys/charts)
+Isometric [charts](https://github.com/polmoneys/charts) and [waffle](https://github.com/polmoneys/Waffle)
 
 ### Inspiration 💐
 
