@@ -32,13 +32,14 @@ const useSeries = (props: UseSeriesInput): UseSeriesOutput => {
     const maxX = Math.max(...points.map(d => new Date(d.date).getTime()))
     const minY = Math.min(...points.map(d => d.value))
     const maxY = Math.max(...points.map(d => d.value))
-
+    // accomodate caption on top
+    const gapTop = 4
     const normalizeX = (value: number): number =>
       circleRadius +
       ((value - minX) / (maxX - minX)) * (width - 2 * circleRadius)
     const normalizeY = (value: number): number =>
       circleRadius +
-      ((value - minY) / (maxY - minY)) * (height - 2 * circleRadius)
+      ((value - minY) / (maxY - minY)) * (height - gapTop * circleRadius)
 
     const normalized = itemsProps.map(item => {
       const pathDataArray = item.map(
